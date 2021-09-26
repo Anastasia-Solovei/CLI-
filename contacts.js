@@ -24,9 +24,7 @@ function listContacts() {
 async function getContactById(contactId) {
   const contacts = await readContacts();
 
-  const [result] = contacts.filter(
-    (contact) => contact.id === parseInt(contactId)
-  );
+  const [result] = contacts.filter((contact) => contact.id === contactId);
   return result;
 }
 
@@ -42,9 +40,7 @@ async function removeContact(contactId) {
   }
 
   if (indexOfContactToRemove && indexOfContactToRemove !== -1) {
-    // if (indexOfContactToRemove !== -1) {
     contacts.splice(indexOfContactToRemove, 1);
-    //}
 
     await fs.writeFile(contactsPath, JSON.stringify(contacts));
     return indexOfContactToRemove;
