@@ -4,7 +4,7 @@ const crypto = require("crypto");
 
 const contactsPath = path.join(__dirname, "db/contacts.json");
 
-const readContacts = async () => {
+async function listContacts() {
   try {
     const result = await fs.readFile(contactsPath, "utf8");
     const contacts = JSON.parse(result);
@@ -15,45 +15,47 @@ const readContacts = async () => {
 
     return contacts;
   }
-};
-
-function listContacts() {
-  return readContacts();
 }
 
 async function getContactById(contactId) {
-  const contacts = await readContacts();
+  try {
+    const contacts = await listContacts();
 
-  const [result] = contacts.filter((contact) => contact.id === contactId);
-  return result;
+    const [result] = contacts.filter((contact) => contact.id === contactId);
+    return result;
+  } catch (error) {
+    return error.message;
+  }
 }
 
 async function removeContact(contactId) {
-  const contacts = await readContacts();
+  try {
+    const contacts = await listContacts();
 
-  const indexOfContactToRemove = contacts.findIndex(
-    (contact) => contact.id === contactId
-  );
+    const result = contacts.filter((contact) => contact.id !== contactId);
 
-  if (indexOfContactToRemove === void 0) {
-    return contactId;
-  }
-
-  if (indexOfContactToRemove && indexOfContactToRemove !== -1) {
-    contacts.splice(indexOfContactToRemove, 1);
-
-    await fs.writeFile(contactsPath, JSON.stringify(contacts));
-    return indexOfContactToRemove;
+    if (result.length < contacts.length) {
+      await fs.writeFile(contactsPath, JSON.stringify(result));
+    } else {
+      const message = `Contact was not found to delete!`;
+      return message;
+    }
+  } catch (error) {
+    return error.message;
   }
 }
 
 async function addContact(name, email, phone) {
-  const contacts = await readContacts();
-  const newContact = { id: crypto.randomUUID(), name, email, phone };
-  contacts.push(newContact);
+  try {
+    const contacts = await listContacts();
+    const newContact = { id: crypto.randomUUID(), name, email, phone };
+    contacts.push(newContact);
 
-  await fs.writeFile(contactsPath, JSON.stringify(contacts));
-  return newContact;
+    await fs.writeFile(contactsPath, JSON.stringify(contacts));
+    return newContact;
+  } catch (error) {
+    return error.message;
+  }
 }
 
 module.exports = {
