@@ -54,14 +54,11 @@ function invokeAction({ action, id, name, email, phone }) {
 
     case "remove":
       removeContact(id)
-        .then((index) => {
-          if (index) {
-            console.log(
-              chalk.yellowBright(`Contact with id: '${id}' deleted!`)
-            );
-          }
-          if (!index) {
-            console.log(chalk.red(`Contact with id: '${id}' not found!`));
+        .then((message) => {
+          if (message) {
+            console.log(chalk.red(`Contact was not found to delete!`));
+          } else {
+            console.log(chalk.yellowBright(`Contact deleted!`));
           }
         })
         .catch(console.error);
